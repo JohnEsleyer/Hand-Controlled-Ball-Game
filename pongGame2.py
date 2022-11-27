@@ -11,18 +11,22 @@ cap.set(4, 720)
 
 imgBackground = cv2.imread("assets/backgrounds/nightbackgroundwithmoon.png")
 #imgBackground = cv2.imread("Resources/Background.png")
-imgGameOver = cv2.imread("Resources/gameOver.png")
-imgBall = cv2.imread("Resources/ball.png", cv2.IMREAD_UNCHANGED)
+
+#imgGameOver = cv2.imread("Resources/noonbackground.png")
+imgWinGirl = cv2.imread("Resources/girlWon.png")
+imgWinBoy = cv2.imread("Resources/boyWon.png")
+
+imgBall = cv2.imread("Resources/ball21.png", cv2.IMREAD_UNCHANGED)
 imgBat1 = cv2.imread("Resources/girl1.png", cv2.IMREAD_UNCHANGED)
-#imgBat2 = cv2.imread("Resources/boy1.png", cv2.IMREAD_UNCHANGED)
+imgBat2 = cv2.imread("Resources/boy1.png", cv2.IMREAD_UNCHANGED)
 #imgBat1 = cv2.imread("Resources/bat1.png", cv2.IMREAD_UNCHANGED)
-imgBat2 = cv2.imread("Resources/bat2.png", cv2.IMREAD_UNCHANGED)
+#imgBat2 = cv2.imread("Resources/bat2.png", cv2.IMREAD_UNCHANGED)
 detector = HandDetector(detectionCon=0.8, maxHands=2)
 
 # Variables
 ballPos = [100, 100]
-speedX = 15
-speedY = 15
+speedX = 25
+speedY = 25
 gameOver = False
 score = [0, 0]
 
@@ -33,7 +37,7 @@ while True:
     #Find the hands
     hands, img = detector.findHands(img, flipType=False)
     img = cv2.addWeighted(img, 0.2, imgBackground, 0.8, 0.0)
-
+    
     # Check for hands
     if hands:
         for hand in hands:
@@ -44,27 +48,46 @@ while True:
 
             if hand['type'] == "Left":
                 img = cvzone.overlayPNG(img, imgBat1, (59, y1))
-                if 59 < ballPos[0] < 59 + w1 and y1 < ballPos[1] < y1 + h1:
+                if 70 < ballPos[0] < 70 + w1 and y1 < ballPos[1] < y1 + h1:
                     speedX = -speedX
                     ballPos[0] += 30
                     score[0] += 1
-                    speedX += 10
-                    speedY += 10
+                    imgBat1 = cv2.imread("Resources/girljump.png", cv2.IMREAD_UNCHANGED)
+
+                else:
+                    imgBat1 = cv2.imread("Resources/girl1.png", cv2.IMREAD_UNCHANGED)
 
             if hand['type'] == "Right":
-                img = cvzone.overlayPNG(img, imgBat2, (1195, y1))
+                #img = cvzone.overlayPNG(img, imgBat2, (1195, y1))
+                img = cvzone.overlayPNG(img, imgBat2, (1100, y1))
                 if 1195 - 50 < ballPos[0] < 1195 and y1 < ballPos[1] < y1 + h1:
                     speedX = -speedX
                     ballPos[0] -= 30
                     score[1] += 1
-                    speedX += 10
-                    speedY += 10
+                    imgBat2 = cv2.imread("Resources/boyjump.png", cv2.IMREAD_UNCHANGED)
+                else:
+                    imgBat2 = cv2.imread("Resources/boy1.png", cv2.IMREAD_UNCHANGED)
+
     #Game over
+    # if ballPos[0] < 40 or ballPos[0] > 1200:
+    #     gameOver = True
+    # if gameOver:
+    #     img = imgGameOver
+    #     cv2.putText(img, str(score[1] + score[0]), (585, 368), cv2.FONT_HERSHEY_COMPLEX, 2.5, (153, 0, 0), 5)
+    #
+
+
     if ballPos[0] < 40 or ballPos[0] > 1200:
         gameOver = True
     if gameOver:
-        img = imgGameOver
-        cv2.putText(img, str(score[1] + score[0]), (585, 368), cv2.FONT_HERSHEY_COMPLEX, 2.5, (153, 0, 0), 5)
+        # Girl Won
+        if score[0] > score[1]:
+            img = imgWinGirl
+            cv2.putText(img, str(score[0]), (585, 368), cv2.FONT_HERSHEY_COMPLEX, 2.5, (153, 0, 0), 5)
+        # Boy Won
+        if score[1] > score[0]:
+            img = imgWinBoy
+            cv2.putText(img, str(score[1]), (585, 368), cv2.FONT_HERSHEY_COMPLEX, 2.5, (153, 0, 0), 5)
     else:
 
         #Move the ball

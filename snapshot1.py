@@ -9,7 +9,9 @@ cap = cv2.VideoCapture(0)
 cap.set(3, 1280)
 cap.set(4, 720)
 
-imgBackground = cv2.imread("assets/backgrounds/nightbackgroundwithmoon.png")
+#imgBackground = cv2.imread("assets/backgrounds/nightbackgroundwithmoon.png")
+imgBackground = cv2.imread("Resources/soccerfield.png")
+
 #imgBackground = cv2.imread("Resources/Background.png")
 
 #imgGameOver = cv2.imread("Resources/noonbackground.png")
@@ -22,8 +24,7 @@ imgBat2 = cv2.imread("Resources/boy1.png", cv2.IMREAD_UNCHANGED)
 #imgBat1 = cv2.imread("Resources/bat1.png", cv2.IMREAD_UNCHANGED)
 #imgBat2 = cv2.imread("Resources/bat2.png", cv2.IMREAD_UNCHANGED)
 detector = HandDetector(detectionCon=0.8, maxHands=2)
-
-# Players' HP
+#Player HP
 imgHeart = cv2.imread("Resources/heart.png", cv2.IMREAD_UNCHANGED)
 
 
@@ -35,12 +36,10 @@ speedY = 25
 gameOver = False
 score = [0, 0]
 
-girlHP = 3
-boyHP = 3
+girlHP = 100
+boyHP = 100
 
 while True:
-
-
     _, img = cap.read()
     img = cv2.flip(img, 1)
 
@@ -59,8 +58,8 @@ while True:
             if hand['type'] == "Left":
                 img = cvzone.overlayPNG(img, imgBat1, (59, y1))
                 if 70 < ballPos[0] < 70 + w1 and y1 < ballPos[1] < y1 + h1:
-                    speedX = -(speedX + 10) 
-                    #ballPos[0] += 30
+                    speedX = -speedX
+                    ballPos[0] += 100
                     score[0] += 1
                     imgBat1 = cv2.imread("Resources/girljump.png", cv2.IMREAD_UNCHANGED)
 
@@ -71,8 +70,8 @@ while True:
                 #img = cvzone.overlayPNG(img, imgBat2, (1195, y1))
                 img = cvzone.overlayPNG(img, imgBat2, (1100, y1))
                 if 1195 - 50 < ballPos[0] < 1195 and y1 < ballPos[1] < y1 + h1:
-                    speedX = -(speedX + 10)
-                    #ballPos[0] -= 30
+                    speedX = -speedX
+                    ballPos[0] -= 50
                     score[1] += 1
                     imgBat2 = cv2.imread("Resources/boyjump.png", cv2.IMREAD_UNCHANGED)
                 else:
@@ -87,22 +86,16 @@ while True:
     #
 
 
-    if ballPos[0] < 50 and girlHP > 0:
-        girlHP -= 1
-        print(f"Girl {girlHP}")
-    if ballPos[0] > 1150 and boyHP > 0:
-        boyHP -= 1
-        print(f"Boy {boyHP}")
-
-    if girlHP <= 0 or boyHP <= 0 and ballPos[0] < 50 or ballPos[0] > 1150:
-        gameOver = True 
-    else:
-        ballPos = defaultBallPos
-        # speedX = 15
-        # speedY = 15
-        # gameOver = False
-        # score = [0, 0]
-        continue
+    if ballPos[0] < 80:
+        #girlHP -= 1
+        #ballPos = defaultBallPos
+        #print(f"Girl {girlHP}")
+        gameOver = True
+    if ballPos[0] > 1140:
+        #boyHP -=1 
+        #ballPos = defaultBallPos
+        #print(f"Boy {boyHP}")
+        gameOver = True
 
     if gameOver:
         # Girl Won
@@ -110,33 +103,29 @@ while True:
             img = imgWinGirl
             cv2.putText(img, str(score[0]), (585, 368), cv2.FONT_HERSHEY_COMPLEX, 2.5, (153, 0, 0), 5)
         # Boy Won
-        if score[1] > score[0]:
+        elif score[1] > score[0]:
             img = imgWinBoy
             cv2.putText(img, str(score[1]), (585, 368), cv2.FONT_HERSHEY_COMPLEX, 2.5, (153, 0, 0), 5)
-        if score[0] == 0 and score[1] == 0:
-            ballPos = defaultBallPos
-
     else:
-
+      
         #Move the ball
-        if ballPos[1] >= 600 or ballPos[1] <= 20:
+        if ballPos[1] >= 550 or ballPos[1] <= 10:
             speedY = -speedY
 
 
         ballPos[0] += speedX
         ballPos[1] += speedY
-
-        #Draw player HP
-        img = cvzone.overlayPNG(img, imgHeart, [72, 12])
-        img = cvzone.overlayPNG(img, imgHeart, [1000, 12])
+            
+        
 
         #Draw the ball
         img = cvzone.overlayPNG(img, imgBall, ballPos)
+
+        ballPos = defaultBallPos
+
+
         cv2.putText(img, str(score[0]), (300, 650), cv2.FONT_HERSHEY_COMPLEX, 3, (255, 255, 255), 5)
         cv2.putText(img, str(score[1]), (900, 650), cv2.FONT_HERSHEY_COMPLEX, 3, (255, 255, 255), 5)
-        
-
-
     cv2.imshow('Game', img)
     key = cv2.waitKey(1)
     if key == ord('r'):
@@ -145,7 +134,5 @@ while True:
         speedY = 15
         gameOver = False
         score = [0, 0]
-        imgGameOver = cv2.imread("Resources/gameOver.png")
+        #imgGameOver = cv2.imread("Resources/gameOver.png")
         
-        girlHP = 3
-        boyHP = 3
