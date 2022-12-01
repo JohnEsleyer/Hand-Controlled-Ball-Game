@@ -9,3 +9,6 @@ Just run the pong.py file
 Using the terminal just type:
 python3 pong.py
 
+# Tech Stack
+* Python
+
